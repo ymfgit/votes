@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.vote.mapper.VoteUserMapper" >
+	<select id="getUser" parameterType="VoteUser" resultType="VoteUser">
+	    select * from VoteUser where vuUsername=#{vuusername} and vuPassword=#{vupassword}
+	</select>
+	
+	<insert id="register" parameterType="VoteUser">
+	    insert into VoteUser values(#{vuId},#{vuusername},#{vupassword},1,1)
+	</insert>
+</mapper>

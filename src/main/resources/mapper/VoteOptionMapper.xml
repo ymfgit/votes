@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.vote.mapper.VoteOptionMapper" >
+  <resultMap id="BaseResultMap" type="com.yc.vote.entity.VoteOption" >
+    <id column="VOPID" property="vopid" jdbcType="DECIMAL" />
+    <result column="VOOPTION" property="vooption" jdbcType="VARCHAR" />
+    <result column="VSID" property="vsid" jdbcType="DECIMAL" />
+    <result column="VOORDER" property="voorder" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    VOPID, VOOPTION, VSID, VOORDER
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from VOTEOPTION
+    where VOPID = #{vopid,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from VOTEOPTION
+    where VOPID = #{vopid,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.yc.vote.entity.VoteOption" >
+    insert into VOTEOPTION (VOPID, VOOPTION, VSID, 
+      VOORDER)
+    values (#{vopid,jdbcType=DECIMAL}, #{vooption,jdbcType=VARCHAR}, #{vsid,jdbcType=DECIMAL}, 
+      #{voorder,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yc.vote.entity.VoteOption" >
+    insert into VOTEOPTION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vopid != null" >
+        VOPID,
+      </if>
+      <if test="vooption != null" >
+        VOOPTION,
+      </if>
+      <if test="vsid != null" >
+        VSID,
+      </if>
+      <if test="voorder != null" >
+        VOORDER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vopid != null" >
+        #{vopid,jdbcType=DECIMAL},
+      </if>
+      <if test="vooption != null" >
+        #{vooption,jdbcType=VARCHAR},
+      </if>
+      <if test="vsid != null" >
+        #{vsid,jdbcType=DECIMAL},
+      </if>
+      <if test="voorder != null" >
+        #{voorder,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yc.vote.entity.VoteOption" >
+    update VOTEOPTION
+    <set >
+      <if test="vooption != null" >
+        VOOPTION = #{vooption,jdbcType=VARCHAR},
+      </if>
+      <if test="vsid != null" >
+        VSID = #{vsid,jdbcType=DECIMAL},
+      </if>
+      <if test="voorder != null" >
+        VOORDER = #{voorder,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where VOPID = #{vopid,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yc.vote.entity.VoteOption" >
+    update VOTEOPTION
+    set VOOPTION = #{vooption,jdbcType=VARCHAR},
+      VSID = #{vsid,jdbcType=DECIMAL},
+      VOORDER = #{voorder,jdbcType=DECIMAL}
+    where VOPID = #{vopid,jdbcType=DECIMAL}
+  </update>
+</mapper>

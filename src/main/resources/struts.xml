@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="true" />
+	
+	 <!-- 把struts的action对象交给spring容器管理 -->
+	<constant name="struts.objectFactory " value="spring" />
+
+	<package name="default" namespace="/" extends="struts-default">
+	    <interceptors>
+	        <interceptor name="loginIntercepter" class="com.yc.vote.interceptor.LoginInterceptor"/>
+	        <interceptor-stack name="myStack">
+	            <interceptor-ref name="defaultStack"/>
+	            <!-- <interceptor-ref name="loginIntercepter"/> -->
+	            <interceptor-ref name="loginIntercepter">
+	                <param name="includeMethods">vote,save</param>
+	            </interceptor-ref>
+	        </interceptor-stack>
+	    </interceptors>
+	    
+	    <!-- 全局result:表示在action中没有找到对应的result就到result中找 -->
+	    <global-results>
+	        <result name="Tologin" type="redirect">page/login.jsp</result>
+	    </global-results>
+	    
+		<action name="*_*" class="{1}Action" method="{2}">
+		    <interceptor-ref name="myStack"/>
+		    <result name="{2}">page/{2}.jsp</result>
+		    <result name="loginSuccess">page/list.jsp</result> 
+		    <result name="saveSuccess">page/saveSuccess.jsp</result>
+		    <result name="saveFail">page/vote.jsp</result>
+		    <result name="registerSuccess">page/reg_success.jsp</result>
+		    <result name="addSuccess">page/addSuccess.jsp</result>
+		    <result name="addFail">page/add.jsp</result>
+		    <result name="search">page/list.jsp</result>
+		    <result name="modify">page/fix.jsp</result>
+		    <result name="fix">page/update.jsp</result>
+		    <result name="updateSuccess">page/updateSuccess.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.vote.mapper.VoteSubjectMapper">
+	<select id="findAllSubject" resultType="VoteSubject">
+		select * from voteSubject
+	</select>
+
+	<sql id="selectSubject">
+	     select vsId,vsTitle,vsType,
+		(select count(1) from VoteOption where vsId=s.vsId) optionCount,
+		(select count(1) from VoteItem where vsId=s.vsId) voteUserCount
+		from VoteSubject s where vsId=#{vsId}
+	</sql>
+	
+	<select id="findAllSubjectBeans" resultType="SubjectBeans">
+		select vsId,vsTitle,
+		(select count(1) from VoteOption where vsId=s.vsId) optionCount,
+		(select count(1) from VoteItem where vsId=s.vsId) voteUserCount
+		from VoteSubject s
+	</select>
+	
+	<resultMap type="OptionBean" id="OptionBeanMap">
+	    <collection property="voteOptionCount" column="vsId" javaType="list" select="getOptionVoteCountByVsId"/>
+	</resultMap>
+	
+	<select id="getOptionVoteCountByVsId" parameterType="int" resultType="int">
+	    select count(i.vopid) from VoteOption o 
+	    left join VoteItem i on o.vopid=i.vopid where o.vsId=#{vsId} group by voorder order by voorder
+	</select>
+	
+	<select id="findOptionsByVsId" parameterType="int" resultMap="OptionBeanMap">
+	   <include refid="selectSubject"/>
+	</select>
+	
+	
+	<resultMap type="VoteBean" id="VoteBeanMap">
+	    <id property="vsId" column="vsId"/>
+	    <collection property="options" column="vsId" ofType="VoteOption" select="getOptionsByVsId"/>
+	</resultMap>
+	
+	<select id="getOptionsByVsId" parameterType="int" resultType="VoteOption">
+	   select * from VoteOption where vsId=#{vsId}
+	</select>
+	
+	<select id="findVoteBeansByVsId" parameterType="int" resultMap="VoteBeanMap">
+	    <include refid="selectSubject"/><!-- 调用sql语句变量 -->
+	</select>
+	
+	<insert id="insertItem" parameterType="VoteItem">
+	    insert into VoteItem values (seq_item.nextval, #{vopid}, #{vsId}, #{vuId})
+	</insert>
+	
+	<insert id="insertSubject" parameterType="AddSubjectBean">
+	    <selectKey keyColumn="currId" keyProperty="vsId" resultType="int" order="BEFORE">
+	        select seq_subject.nextval currId from dual
+	    </selectKey>
+	    insert into VoteSubject values(#{vsId},#{vsTitle},#{vsType})
+	</insert>
+	<insert id="insertOption" parameterType="VoteOption">
+	    insert into VoteOption values(seq_option.nextval,#{vooption},#{vsid},#{voorder})
+	</insert>
+	
+	<select id="findSubjectByName" parameterType="map" resultType="SubjectBeans">
+    	  select vsId,vsTitle,
+		(select count(1) from VoteOption where s.vsId=vsId) optionCount,
+		(select count(1) from VoteItem where s.vsId=vsId) voteUserCount
+		from VoteSubject s 
+    	<where>
+    	    <if test="vsTitle!=null and vsTitle!=''" >
+    	        vsId in (select vsId from VoteSubject s where vsTitle like '%${vsTitle}%')
+    	    </if>
+    	</where>
+    </select>
+    
+	
+	<update id="updateSubject" parameterType="map" >
+	    update VoteSubject set vsTitle=#{vsTitle},vsType=#{vsType} where vsId=#{vsId}
+	</update>
+	
+	<delete id="deleteOptionByVsid" parameterType="int">
+	    delete from VoteOption where vsId=#{vsId} 
+	</delete>
+	
+	<update id="updateOption" parameterType="map">
+	    update VoteOption set vooption=#{vooption},vsid=#{vsid},voorder=#{voorder} where vopid=#{vopid}
+	</update>
+	
+</mapper>
